@@ -1,10 +1,18 @@
 package fr.ippon.contest.puissance4;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Puissance4Impl implements Puissance4 {
+
+	private CouleurJoueur joueurCourant;
+	private List<Piece> LigneEnCours = new ArrayList<Piece>();
 
 	@Override
 	public void nouveauJeu() {
-		// TODO Auto-generated method stub
+		joueurCourant = (Math.random() % 2 == 1 ? CouleurJoueur.JAUNE
+				: CouleurJoueur.ROUGE);
+		LigneEnCours = new ArrayList<Piece>();
 
 	}
 
@@ -22,14 +30,24 @@ public class Puissance4Impl implements Puissance4 {
 
 	@Override
 	public char getTour() {
-		// TODO Auto-generated method stub
-		return 0;
+		return getCharJoueur(this.joueurCourant);
 	}
+
+	private char getCharJoueur(CouleurJoueur joueurEnum) {
+		switch (joueurEnum) {
+		case JAUNE:
+			return 'J';
+		case ROUGE:
+			return 'R';
+		}
+		return ' ';
+	}
+	
 
 	@Override
 	public char getOccupant(int ligne, int colonne) {
-		// TODO Auto-generated method stub
-		return 0;
+		CouleurJoueur joueur = this.LigneEnCours.get(ligne * 10 + colonne).getJoueur();
+		return getCharJoueur(joueur);
 	}
 
 	@Override
@@ -37,9 +55,9 @@ public class Puissance4Impl implements Puissance4 {
 		// TODO Auto-generated method stub
 
 	}
-	
-	private boolean isColonneValide(int colonne){
-		return (colonne < Puissance4.MAX_COLONNE && colonne > Puissance4.MIN_COLONNE) ; 
+
+	private boolean isColonneValide(int colonne) {
+		return (colonne < Puissance4.MAX_COLONNE && colonne > Puissance4.MIN_COLONNE);
 	}
 
 }
