@@ -7,6 +7,13 @@ public interface Puissance4 {
 	public enum EtatJeu {
 		EN_COURS, ROUGE_GAGNE, JAUNE_GAGNE, MATCH_NUL;
 	}
+
+	public enum CouleurJoueur {
+		ROUGE , JAUNE ;
+	}
+	
+	int MAX_COLONNE = 7;
+	int MIN_COLONNE = 0;
 	
 	/**
 	 * Vide la grille de jeu, et tire au sort le joeur qui commence.
