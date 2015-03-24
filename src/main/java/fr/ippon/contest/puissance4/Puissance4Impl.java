@@ -34,7 +34,9 @@ public class Puissance4Impl implements Puissance4 {
 		if (isNotCorrectJouer(tour)) {
 			throw new IllegalArgumentException("Joueur invalide");
 		}
-
+		
+		majJoueur(tour);
+		
 		for (int ligne = 0; ligne < grille.length; ligne++) {
 			for (int colonne = 0; colonne < grille.length; colonne++) {
 				if (grille[ligne][colonne] == Puissance4.CASE_VIDE)
@@ -52,6 +54,10 @@ public class Puissance4Impl implements Puissance4 {
 
 	}
 
+	private void majJoueur(char tour) {
+		joueurCourant = ""+tour;
+	}
+
 	private List<Integer> majLignesPourPieceJouees(Piece piece) {
 		List<Integer> casesAdjacentes = piece.getCoordonneesAdjacents();
 		casesAdjacentes
@@ -64,7 +70,9 @@ public class Puissance4Impl implements Puissance4 {
 						caseAdjacente -> {
 							Piece pieceAdj = this.LigneEnCours
 									.get(caseAdjacente);
-							piece.ajouter(pieceAdj.isAdjacent(piece),
+							
+							String direction_adjacent = pieceAdj.isAdjacent(piece);
+							piece.ajouter(direction_adjacent,
 									pieceAdj);
 							pieceAdj.ajouter(
 									piece.isAdjacent(pieceAdj), piece);
@@ -109,7 +117,8 @@ public class Puissance4Impl implements Puissance4 {
 			}
 			
 		};
-		
+		System.out.println(":: rouge " + nbLignesRouge + " :: jaune " + nbLignesJaune);
+		System.out.println(LigneEnCours.get(53).getLongueursLignesAvecId());
 		if(nbLignesJaune > 0 ){
 			if (nbLignesRouge > 0){
 					return EtatJeu.MATCH_NUL;
