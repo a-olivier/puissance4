@@ -15,6 +15,9 @@ public class proof {
 		List<char[]> asList = Arrays.asList(grille);
 		
 		System.out.println(asList.get(0));
+		
+	System.out.println(""+ -1 + -3);
+		
 
 	}
 

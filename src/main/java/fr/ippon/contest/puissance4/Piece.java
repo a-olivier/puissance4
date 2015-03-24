@@ -1,5 +1,7 @@
 package fr.ippon.contest.puissance4;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,28 @@ public class Piece {
 	}
 	
 	
+	public List<Integer> getCoordonneesAdjacents(){
+	List<String> coordoneesAdj = new ArrayList<String>();
+	
+	coordoneesAdj.add(""+((x - 1) * 10 + (y-1)));
+	coordoneesAdj.add(""+((x - 1) * 10 + y  ));
+	coordoneesAdj.add(""+((x - 1) * 10 + (y+1)));
+	
+	coordoneesAdj.add(""+((x    ) * 10 + (y-1)));
+	coordoneesAdj.add(""+((x    ) * 10 + (y+1)));
+	
+	coordoneesAdj.add(""+((x + 1) * 10 + (y-1)));
+	coordoneesAdj.add(""+((x + 1) * 10 + y  ));
+	coordoneesAdj.add(""+((x + 1) * 10 + (y+1)));
+	
+	return coordoneesAdj
+			.stream()
+			.filter(x -> ! x.contains("-"))
+			.map(c -> new Integer(c))
+			.collect(Collectors.toList())
+			;
+	
+	}
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -82,7 +106,7 @@ public class Piece {
 
 	@Override
 	public String toString() {
-		return this.joueur + " : (" + this.getX() + "," + this.getY() + ")"; 
+		return "[" + this.joueur + " : (" + this.getX() + "," + this.getY() + ") ]"; 
 	};
 	
 	public Integer GenererValeurLigne(Entry<String, List<Piece>> in) {
