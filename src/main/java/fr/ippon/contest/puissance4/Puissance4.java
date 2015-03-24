@@ -8,12 +8,14 @@ public interface Puissance4 {
 		EN_COURS, ROUGE_GAGNE, JAUNE_GAGNE, MATCH_NUL;
 	}
 
-	public enum CouleurJoueur {
-		ROUGE , JAUNE ;
-	}
+	final static String ROUGE = "R";
+	final static String JAUNE = "J";
+	static final char CASE_VIDE = '-';
 	
 	int MAX_COLONNE = 7;
 	int MIN_COLONNE = 0;
+	
+	int MAX_LIGNE = 6; 
 	
 	/**
 	 * Vide la grille de jeu, et tire au sort le joeur qui commence.

@@ -4,13 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
-import fr.ippon.contest.puissance4.Puissance4.CouleurJoueur;
-
 public class Piece {
-	private CouleurJoueur joueur;
+	private char joueur;
 	private Integer x, y = -1;
 
 	/*
@@ -18,6 +15,12 @@ public class Piece {
 	 * droite qui contiennent la piece
 	 */
 	private HashMap<String, List<Piece>> lignes = new HashMap<String, List<Piece>>();
+
+	public Piece(int colonne, int ligne , char joueur) {
+		x = colonne ; 
+		y = ligne ; 
+		this.joueur = joueur; 
+	}
 
 	public boolean ajouter(String sens, Piece piece) {
 		List<Piece> ligne = lignes.get(sens);		
@@ -77,6 +80,11 @@ public class Piece {
 		return this.getX() * 10 + this.getY();
 	};
 
+	@Override
+	public String toString() {
+		return this.joueur + " : (" + this.getX() + "," + this.getY() + ")"; 
+	};
+	
 	public Integer GenererValeurLigne(Entry<String, List<Piece>> in) {
 		return in.getValue().size();
 	}
@@ -104,11 +112,11 @@ public class Piece {
 		this.y = y;
 	}
 
-	public CouleurJoueur getJoueur() {
+	public char getJoueur() {
 		return joueur;
 	}
 
-	public void setJoueur(CouleurJoueur joueur) {
+	public void setJoueur(char joueur) {
 		this.joueur = joueur;
 	}
 	
