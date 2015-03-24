@@ -2,11 +2,15 @@ package fr.ippon.contest.puissance4;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import org.apache.log4j.pattern.LiteralPatternConverter;
 
 public class Piece {
 	private char joueur;
@@ -29,11 +33,14 @@ public class Piece {
 		if (!lignes.containsKey(sens)) {
 			ArrayList<Piece> nouvelleLigne = new ArrayList<Piece>();
 			nouvelleLigne.add(piece);
+			if (piece.getLigne(sens) != null)
+				nouvelleLigne.addAll(piece.getLigne(sens));
 			lignes.put(sens, (new ArrayList<Piece>(nouvelleLigne)));
 			return true;
 		} else {
-			List<Piece> ligne = lignes.get(sens);
-			ligne.forEach(pieceDansLigne -> {
+			ArrayList<Piece> ligne = (ArrayList<Piece> )lignes.get(sens);
+			List<Piece> clone = (List<Piece>)ligne.clone();
+			clone.forEach(pieceDansLigne -> {
 				if (pieceDansLigne.getLigne(sens) == null) {
 					pieceDansLigne.ajouter(sens, piece);
 				} else {
@@ -44,13 +51,9 @@ public class Piece {
 		}
 	}
 
-	public Map<Integer, Integer> getLongueursLignesAvecId() {
-		return (Map<Integer, Integer>) lignes
-				.entrySet()
-				.stream()
-				.collect(
-						Collectors.toMap(this::GenereCleLigne,
-								this::GenererValeurLigne));
+	public List<Integer> getLongueursLignes() {
+		return lignes.entrySet().stream().map(x -> x.getValue().size())
+				.collect(Collectors.toList());
 	}
 
 	public Integer GenereCleLigne(Entry<String, List<Piece>> in) {
@@ -69,16 +72,27 @@ public class Piece {
 		} else if (in.getY().equals(this.getY())) {
 			// sur la même ligne vertical
 			return "v";
-		} else if (in.getPositionYDiagonaleGauche().equals(this.getY())) {
+		} else if ((in.getX() + 1 == this.getX() && in.getY() + 1 == this
+				.getY())
+				|| (in.getY() - 1 == this.getY() && in.getX() - 1 == this
+						.getX())) {
 			// diagonale gauche
 			return "dg";
-		} else if (in.getPositionYDiagonaleDroite().equals(getY())) {
+		} else if ((in.getX() + 1 == this.getX() && in.getY() - 1 == this
+				.getY())
+				|| (in.getY() + 1 == this.getY() && in.getX() - 1 == this
+						.getX())) {
 			// diagonale droite
 			return "dd";
 		} else {
 			return null;
 		}
 
+	}
+
+	public void displayLine() {
+		System.out.println("display lignes ");
+		lignes.entrySet().forEach(System.out::println);
 	}
 
 	public List<Integer> getCoordonneesAdjacents() {
