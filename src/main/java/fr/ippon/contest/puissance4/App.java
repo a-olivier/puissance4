@@ -5,12 +5,11 @@ import java.util.InputMismatchException;
 
 import fr.ippon.contest.puissance4.Puissance4.EtatJeu;
 
-
 public class App {
-	
+
 	public static void main(String[] args) {
 		Puissance4 jeu = new Puissance4Impl();
-		try (Scanner scanner = new Scanner (System.in)) {
+		try (Scanner scanner = new Scanner(System.in)) {
 			bienvenue();
 			while (jeu.getEtatJeu() == EtatJeu.EN_COURS) {
 				afficheGrille(jeu);
@@ -21,7 +20,9 @@ public class App {
 					jeu.jouer(col);
 				} catch (InputMismatchException ime) {
 					String line = scanner.nextLine();
-					System.err.println("Erreur, veuillez entrer un entier plutôt que: " + line);      
+					System.err
+							.println("Erreur, veuillez entrer un entier plutôt que: "
+									+ line);
 				} catch (Exception e) {
 					System.err.println("Erreur - " + e.getMessage());
 				}
@@ -47,7 +48,8 @@ public class App {
 	}
 
 	private static void afficheInvite(final Puissance4 jeu) {
-		System.out.println("A votre tour, " + jeu.getTour() + " entrez le numéro de colonne où vous voulez jouer : ");
+		System.out.println("A votre tour, " + jeu.getTour()
+				+ " entrez le numéro de colonne où vous voulez jouer : ");
 	}
 
 	private static void afficheGrille(final Puissance4 jeu) {
@@ -62,8 +64,8 @@ public class App {
 
 	private static void bienvenue() {
 		String msg = "*****************************\n"
-					+"* Bienvenue sur Puissance 4 *\n"
-					+"*****************************";		
+				+ "* Bienvenue sur Puissance 4 *\n"
+				+ "*****************************";
 		System.out.println(msg);
 	}
 }

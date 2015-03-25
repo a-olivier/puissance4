@@ -1,23 +1,22 @@
 package fr.ippon.contest.puissance4;
 
+public class Puissance4StatsDecorator extends StatsDecorator implements
+		Puissance4 {
 
-public class Puissance4StatsDecorator extends StatsDecorator implements Puissance4 {
-	
 	/*
 	 * Constantes representant le nom des méthodes de l'API.
 	 */
 	private final String NOUVEAU_JEU = "nouveauJeu";
 	private final String CHARGER_JEU = "chargerJeu";
-	private final String ETAT_JEU 	 = "getEtatJeu";
-	private final String TOUR 		 = "getTour";
-	private final String OCCUPANT 	 = "getOccupant";
-	private final String JOUER 		 = "jouer";
+	private final String ETAT_JEU = "getEtatJeu";
+	private final String TOUR = "getTour";
+	private final String OCCUPANT = "getOccupant";
+	private final String JOUER = "jouer";
 
 	/**
 	 * Instance à décorer
 	 */
 	private Puissance4 jeu;
-	
 
 	public Puissance4StatsDecorator(Puissance4 jeuADecorer) {
 		jeu = jeuADecorer;
@@ -25,13 +24,15 @@ public class Puissance4StatsDecorator extends StatsDecorator implements Puissanc
 
 	@Override
 	public void nouveauJeu() {
-		collectMethodStats(NOUVEAU_JEU, () -> { jeu.nouveauJeu(); });
+		collectMethodStats(NOUVEAU_JEU, () -> {
+			jeu.nouveauJeu();
+		});
 	}
 
 	@Override
 	public void chargerJeu(char[][] grille, char tour) {
-		collectBiConsumerStats(CHARGER_JEU, (g, t) -> { 
-			jeu.chargerJeu(g,t); 
+		collectBiConsumerStats(CHARGER_JEU, (g, t) -> {
+			jeu.chargerJeu(g, t);
 		}, grille, tour);
 	}
 
@@ -58,8 +59,8 @@ public class Puissance4StatsDecorator extends StatsDecorator implements Puissanc
 
 	@Override
 	public void jouer(int colonne) {
-		collectConsumerStats(JOUER, c -> { 
-			jeu.jouer(c); 
+		collectConsumerStats(JOUER, c -> {
+			jeu.jouer(c);
 		}, colonne);
 	}
 }

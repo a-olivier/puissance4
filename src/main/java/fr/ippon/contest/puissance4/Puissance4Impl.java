@@ -11,6 +11,12 @@ import java.util.Set;
 public class Puissance4Impl implements Puissance4 {
 
 	private String joueurCourant;
+	/**
+	 * Au moment de jouer une pièce ( ou pour chaque pièce au chargement d'une
+	 * grille) on met a jour cette map, elle contient un clef hashé en fonction
+	 * des coordonnées de la piece courante et une objet de type piece ( voir @see
+	 * {@link Piece} )
+	 */
 	private Map<Integer, Piece> LigneEnCours = new HashMap<Integer, Piece>();
 
 	@Override
@@ -23,26 +29,26 @@ public class Puissance4Impl implements Puissance4 {
 
 	@Override
 	public void chargerJeu(char[][] grille, char tour) {
+		int lignesDansGrille = grille.length;
+		int colonnesDansGrille = grille[0].length;
 
+		// init
 		nouveauJeu();
-		int ligneDansGrille = grille.length;
-		int colonneDansGrille = grille[0].length;
+		majJoueur(tour);
 
-		if (isNotTailleCorrecte(ligneDansGrille, colonneDansGrille)) {
+		if (isNotTailleCorrecte(lignesDansGrille, colonnesDansGrille)) {
 			throw new IllegalArgumentException("grille invalide");
 		}
 
-		if (isNotCorrectJouer(tour)) {
+		if (isNotJoueurValide(tour)) {
 			throw new IllegalArgumentException("Joueur invalide");
 		}
 
-		majJoueur(tour);
-
 		for (int ligne = 0; ligne < grille.length; ligne++) {
 			for (int colonne = 0; colonne < grille[ligne].length; colonne++) {
-				if (grille[ligne][colonne] == Puissance4.CASE_VIDE)
-					continue;
 
+				if (isCaseVide(grille, ligne, colonne))
+					continue;
 				Piece piece = new Piece(colonne, ligne, grille[ligne][colonne]);
 				majLignesPourPieceJouees(piece);
 				LigneEnCours.put(piece.hashCode(), piece);
@@ -51,38 +57,34 @@ public class Puissance4Impl implements Puissance4 {
 
 	}
 
+	private boolean isCaseVide(char[][] grille, int ligne, int colonne) {
+		return grille[ligne][colonne] == Puissance4.CASE_VIDE;
+	}
+
 	private void majJoueur(char tour) {
 		joueurCourant = "" + tour;
 	}
 
-	private List<Integer> majLignesPourPieceJouees(Piece piece) {
-		System.out.println("### entré ##");
-		piece.displayLine();
+	private void majLignesPourPieceJouees(Piece piece) {
 		List<Integer> casesAdjacentes = piece.getCoordonneesAdjacents();
 		casesAdjacentes
 				.stream()
 				.filter(coordonne -> this.LigneEnCours.containsKey(coordonne)
-						&& this.LigneEnCours.get(coordonne).getJoueur() == piece
-								.getJoueur())
-				.forEach(
-						caseAdjacente -> {
-							System.out.println("piece courante : " + piece);
-							Piece pieceAdj = this.LigneEnCours
-									.get(caseAdjacente);
-							System.out.println("piece adj" + pieceAdj);
-							String direction_adjacent = pieceAdj
-									.isAdjacent(piece);
-							System.out.println("____ direction   "
-									+ direction_adjacent);
-							piece.ajouter(direction_adjacent, pieceAdj);
-							pieceAdj.ajouter(piece.isAdjacent(pieceAdj), piece);
-						});
-		System.out.println("### sortie ###");
-		piece.displayLine();
-		return casesAdjacentes;
+						&& this.LigneEnCours.get(coordonne).getData()
+								.getJoueur() == piece.getData().getJoueur())
+				.forEach(caseAdjacente -> {
+					maJLignes(piece, caseAdjacente);
+				});
 	}
 
-	private boolean isNotCorrectJouer(char tour) {
+	private void maJLignes(Piece piece, Integer caseAdjacente) {
+		Piece pieceAdj = this.LigneEnCours.get(caseAdjacente);
+
+		piece.ajouter(pieceAdj.getDirectionAdj(piece), pieceAdj);
+		pieceAdj.ajouter(piece.getDirectionAdj(pieceAdj), piece);
+	}
+
+	private boolean isNotJoueurValide(char tour) {
 		return tour != Puissance4.JAUNE.charAt(0)
 				&& tour != Puissance4.ROUGE.charAt(0);
 	}
@@ -103,14 +105,13 @@ public class Puissance4Impl implements Puissance4 {
 				.hasNext();) {
 			Entry<Integer, Piece> x = (Entry<Integer, Piece>) it_ligneEnCours
 					.next();
-
 			List<Integer> longueursLignes = x.getValue().getLongueursLignes();
-
 			for (Integer y : longueursLignes) {
 				if (y > 3) {
-					if (x.getValue().getJoueur() == Puissance4.ROUGE.charAt(0)) {
+					if (x.getValue().getData().getJoueur() == Puissance4.ROUGE
+							.charAt(0)) {
 						nbLignesRouge++;
-					} else if (x.getValue().getJoueur() == Puissance4.JAUNE
+					} else if (x.getValue().getData().getJoueur() == Puissance4.JAUNE
 							.charAt(0)) {
 						nbLignesJaune++;
 					}
@@ -119,9 +120,6 @@ public class Puissance4Impl implements Puissance4 {
 
 		}
 		;
-		System.out.println(":: rouge " + nbLignesRouge + " :: jaune "
-				+ nbLignesJaune);
-		LigneEnCours.get(22).displayLine();
 		boolean partieFinie = LigneEnCours.keySet().size() == Puissance4.MAX_COLONNE
 				* Puissance4.MAX_LIGNE;
 
@@ -148,7 +146,8 @@ public class Puissance4Impl implements Puissance4 {
 
 	@Override
 	public char getOccupant(int ligne, int colonne) {
-		return this.LigneEnCours.get(ligne * 10 + colonne).getJoueur();
+		return this.LigneEnCours.get(Piece.genererIdLigne(ligne, colonne)).getData()
+				.getJoueur();
 	}
 
 	@Override
@@ -166,17 +165,15 @@ public class Puissance4Impl implements Puissance4 {
 
 		while (pasDeCaseLibre) {
 
-			if (!LigneEnCours.containsKey(colonne * 10 + ligne)) {
+			if (!LigneEnCours.containsKey(Piece.genererIdLigne(colonne, ligne))) {
 				Piece piece = new Piece(colonne, ligne, getTour());
-				LigneEnCours.put(colonne * 10 + ligne, piece);
+				LigneEnCours.put(Piece.genererIdLigne(colonne, ligne), piece);
 				majLignesPourPieceJouees(piece);
 				pasDeCaseLibre = false;
 			} else {
 				ligne--;
 			}
-
 		}
-
 		if (Puissance4.ROUGE.equals(joueurCourant)) {
 			majJoueur(Puissance4.JAUNE.charAt(0));
 		} else {
@@ -184,13 +181,14 @@ public class Puissance4Impl implements Puissance4 {
 		}
 	}
 
+
 	private boolean colonneInvalide(int colonne) {
 		return colonne < Puissance4.MIN_COLONNE
 				|| colonne >= Puissance4.MAX_COLONNE;
 	}
 
 	private boolean colonnePleine(int colonne) {
-		return LigneEnCours.containsKey((colonne) * 10);
+		return LigneEnCours.containsKey(Piece.genererIdLigne(colonne, 0));
 	}
 
 	private boolean isColonneValide(int colonne) {
